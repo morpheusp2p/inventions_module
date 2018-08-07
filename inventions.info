@@ -1,0 +1,5 @@
+name = Current Inventions Log
+description = Describing my inventions
+core = "7.x"
+version = "7.x-0.1"
+author="Saharsh"

@@ -1,0 +1,47 @@
+<?php
+
+function get_inventions() {
+  $number = 5;
+  $query = db_select('node', 'n')
+      ->condition('type', 'article')
+      ->condition('status', 1)
+      ->condition('title', '%' . db_like('Invention') . '%', 'LIKE')
+      ->fields('n', array('nid', 'title', 'created'))
+      ->range(0, $number)
+      ->orderBy('created', 'DESC');
+  $result = $query->execute()->fetchAll();
+  return $result;
+}
+
+/*
+ *hook_block_info().
+ */
+function inventions_info() {
+  $blocks['demo'] = array(
+    'info' => t('Latest Inventions'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  return $blocks;
+}
+/*
+ *hook_block_view().
+ */
+function inventions_block_view($delta = '') {
+  global $user;
+  $block = array();
+  $nodes = get_inventions();
+  $items = array();
+  foreach ($nodes as $node) {
+    $items[] = l($node->title, 'node/' . $node->nid);
+  }
+  if ($delta == 'inventions') {
+    $block['subject'] = t('Latest Inventions');
+    $block['content'] = array(
+      '#theme' => 'item_list',
+      '#items' => $items,
+      '#type' => 'ul',
+    );
+  }
+  return $block;
+}
+?>
